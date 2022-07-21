@@ -1,14 +1,22 @@
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 // import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { TextField, Box, Button, Alert } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { auth } from "../../app/firebaseApp";
+import Link from "next/link";
+
 import {
   useAuthState,
-  useCreateUserWithEmailAndPassword,
+  useSignInWithEmailAndPassword,
 } from "react-firebase-hooks/auth";
-import { signOut, signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  signOut,
+  signInWithEmailAndPassword,
+  getAuth,
+  updateProfile,
+} from "firebase/auth";
 import Header from "../../components/header";
 
 type FormData = {
@@ -17,10 +25,11 @@ type FormData = {
   password: string;
 };
 const Login: NextPage = () => {
+  const router = useRouter();
   const [user] = useAuthState(auth);
 
-  const [createUserWithEmailAndPassword, , , error] =
-    useCreateUserWithEmailAndPassword(auth);
+  const [signInWithEmailAndPassword, , , error] =
+    useSignInWithEmailAndPassword(auth);
   const { register, handleSubmit } = useForm<FormData>();
   const [loginError, setLoginError] = useState({
     status: false,
@@ -28,11 +37,10 @@ const Login: NextPage = () => {
   });
 
   const onSubmit = handleSubmit((data) => {
-    signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
+    signInWithEmailAndPassword(data.email, data.password)
+      .then((userData) => {
         setLoginError({ status: false, message: "" });
+        router.push("/");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -59,17 +67,12 @@ const Login: NextPage = () => {
   });
 
   if (user) {
-    return (
-      <div>
-        <Header />
-        <h2>Привет, {user.uid} </h2>
-      </div>
-    );
+    router.push("/");
   }
+
   console.log(error?.code);
   return (
     <div>
-      <Header />
       <form onSubmit={onSubmit}>
         <h1>Авторизация</h1>
         <Box sx={{ mb: 2 }}>
@@ -96,6 +99,12 @@ const Login: NextPage = () => {
             {loginError.message}
           </Alert>
         )}
+        <Alert severity="info" sx={{ mt: 2 }}>
+          Еще нет аккаунта?{" "}
+          <Link href="/auth/register">
+            <u>Создай прямо сейчас</u>
+          </Link>
+        </Alert>
       </form>
     </div>
   );

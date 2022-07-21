@@ -2,10 +2,99 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import styles from "../styles/Home.module.css";
 import Header from "../components/header";
+import { TextField, Box, Button, Alert } from "@mui/material";
 
+import { updateProfile } from "firebase/auth";
+import { auth } from "../app/firebaseApp";
+import {
+  useAuthState,
+  useCreateUserWithEmailAndPassword,
+} from "react-firebase-hooks/auth";
+
+type FormData = {
+  displayName: string;
+  email: string;
+  password: string;
+};
 const Home: NextPage = () => {
+  const [user] = useAuthState(auth);
+
+  const { register, handleSubmit } = useForm<FormData>();
+  const onSubmit = handleSubmit((data) => {
+    // updateProfile(data.email, data.password).then(function () {});
+    if (user) {
+      updateProfile(user, {
+        displayName: data.displayName,
+        photoURL: "erik.jpg",
+      });
+    }
+  });
+  if (user) {
+    // setEmail(user);
+    return (
+      <div>
+        <h2>Привет, {user.displayName} </h2>
+        <form onSubmit={onSubmit}>
+          <p>
+            <b>Ваша почта: </b>
+            {user.email}
+          </p>
+          {/* <Box>
+            <TextField
+              type="email"
+              fullWidth
+              {...register("email")}
+              placeholder="Ваш email"
+              // value={user.email}
+            />
+          </Box> */}
+          {/* <Box>
+            <TextField
+              type="password"
+              fullWidth
+              {...register("password")}
+              // onChange={(e) => setValue(e.target.value)}
+              placeholder="Укажите новый пароль"
+              sx={{ mt: 2 }}
+            />
+          </Box> */}
+          {/* <Box>
+            <TextField
+              type="password"
+              fullWidth
+              {...register("password")}
+              // onChange={(e) => setValue(e.target.value)}
+              placeholder="Повторите новый пароль"
+              sx={{ mt: 2 }}
+            />
+          </Box> */}
+          <Box>
+            <TextField
+              type="text"
+              {...register("displayName")}
+              fullWidth
+              // onChange={(e) => setValue(e.target.value)}
+              placeholder="Введите имя"
+              sx={{ mt: 2 }}
+            />
+          </Box>
+          <Button
+            type="submit"
+            fullWidth
+            sx={{ mt: 2, p: 2 }}
+            variant="outlined"
+          >
+            Сохранить
+          </Button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,46 +103,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header />
       <main className={styles.main}>
-        <h1 className={styles.title}>
+        {/* <h1 className={styles.title}>
           <Link href="/posts">Список постов</Link>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+        </h1> */}
       </main>
 
       <footer className={styles.footer}>

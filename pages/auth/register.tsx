@@ -1,14 +1,18 @@
+import { useEffect } from "react";
 import type { NextPage } from "next";
 // import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { TextField, Box, Button, Alert } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { auth } from "../../app/firebaseApp";
+import { useRouter } from "next/router";
+import { auth, db } from "../../app/firebaseApp";
 import {
   useAuthState,
   useCreateUserWithEmailAndPassword,
 } from "react-firebase-hooks/auth";
-import { signOut } from "firebase/auth";
+import { signOut, updateProfile } from "firebase/auth";
 import Header from "../../components/header";
+import Link from "next/link";
 
 type FormData = {
   name: string;
@@ -16,19 +20,43 @@ type FormData = {
   password: string;
 };
 const Register: NextPage = () => {
-  const [user] = useAuthState(auth);
-  const [createUserWithEmailAndPassword, , , error] =
-    useCreateUserWithEmailAndPassword(auth);
-  const { register, handleSubmit } = useForm<FormData>();
+  const router = useRouter();
 
-  const onSubmit = handleSubmit((data) => {
-    createUserWithEmailAndPassword(data.email, data.password);
+  const [user] = useAuthState(auth);
+  const [createUserWithEmailAndPassword, newUser, , error] =
+    useCreateUserWithEmailAndPassword(auth);
+  const { register, handleSubmit, getValues } = useForm<FormData>();
+
+  const onSubmit = handleSubmit(async (data) => {
+    await createUserWithEmailAndPassword(data.email, data.password).then(
+      function () {
+        const newUser = auth.currentUser;
+        if (newUser) {
+          updateProfile(newUser, {
+            displayName: data.name,
+          });
+          router.push("/");
+        }
+      }
+    );
   });
 
-  console.log(error?.code);
+  useEffect(() => {
+    if (newUser) {
+      const uid = newUser.user.uid;
+      setDoc(doc(db, "users", uid), {
+        name: getValues("name"),
+      });
+    }
+    console.log(newUser);
+  }, [newUser]);
+
+  if (user) {
+    router.push("/");
+  }
+
   return (
     <div>
-      <Header />
       <form onSubmit={onSubmit}>
         <h1>Регистрация</h1>
         {/* {user && <div>{user.email}</div>} */}
@@ -59,11 +87,17 @@ const Register: NextPage = () => {
         <Button type="submit" variant="contained" fullWidth sx={{ p: 2 }}>
           Зарегистрироваться
         </Button>
-        {error?.code === "auth/email-already-in-use" && (
+        {error?.code && (
           <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
-            Email занят, введите другой
+            {error.message}
           </Alert>
         )}
+        <Alert severity="info" sx={{ mt: 2 }}>
+          Есть аккаунт?{" "}
+          <Link href="/auth/login">
+            <u>Авторизуйся</u>
+          </Link>
+        </Alert>
       </form>
     </div>
   );

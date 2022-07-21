@@ -14,9 +14,11 @@
 .header a {
   margin: 5px 10px;
 }
+.postLink {
+  display: block;
+}
 .authorized {
-  margin: 5px 20px;
-  font-weight: bold;
+  margin: 5px 10px;
 }
 .main {
   min-height: 100vh;
