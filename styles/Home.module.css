@@ -2,6 +2,22 @@
   padding: 0 2rem;
 }
 
+.header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.header a {
+  margin: 5px 10px;
+}
+.authorized {
+  margin: 5px 20px;
+  font-weight: bold;
+}
 .main {
   min-height: 100vh;
   padding: 4rem 0;
