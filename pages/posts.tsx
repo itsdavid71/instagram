@@ -1,24 +1,52 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { collection } from "firebase/firestore";
-import { useCollection } from "react-firebase-hooks/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  limit,
+} from "firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import { db } from "../app/firebaseApp";
 import Link from "next/link";
-import { Card } from "@mui/material";
 import styles from "../styles/Home.module.css";
-import { SyntheticEvent } from "react";
+import { Card, Button } from "@mui/material";
+import { style } from "@mui/system";
+import postConverter from "../helpers/postConverter";
 
 const Posts: NextPage = () => {
+  const postsRef = collection(db, "posts").withConverter(postConverter);
   const router = useRouter();
-  const [posts] = useCollection(collection(db, "posts"));
+  const [posts] = useCollectionData(
+    query(postsRef, orderBy("createdAt", "desc"))
+  );
+  console.log(posts);
   return (
     <div>
-      <h1>Страница поста {router.query.id}</h1>
+      <h1>Посты {router.query.id}</h1>
+      <Button variant="contained" onClick={() => router.push("/posts/create")}>
+        Создать пост
+      </Button>
       {posts && (
         <div>
-          {posts.map((post: SyntheticEvent) => (
-            <Link className={styles.postLink} href={"/posts/" + post.id}>
-              <Card sx={{ m: 2, p: 2 }} variant="outlined">
+          {posts.map((post) => (
+            <Link
+              key={post.id}
+              className={styles.postLink}
+              href={"/posts/" + post.id}
+            >
+              <Card
+                sx={{ mt: 2, p: 2 }}
+                className={styles.postItem}
+                variant="outlined"
+              >
+                {post.createdAt && (
+                  <span className={styles.postCreatedAt}>
+                    {post.createdAt.toLocaleDateString()}
+                  </span>
+                )}
                 {post.text}
               </Card>
             </Link>

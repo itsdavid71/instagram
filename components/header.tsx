@@ -1,10 +1,13 @@
 import type { NextPage } from "next";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
+import { useDocumentData } from "react-firebase-hooks/firestore";
 import { Button } from "@mui/material";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
-import { auth } from "../app/firebaseApp";
+import { auth, db } from "../app/firebaseApp";
+import { doc, updateDoc } from "firebase/firestore";
+
 import {
   useAuthState,
   useCreateUserWithEmailAndPassword,
@@ -13,15 +16,22 @@ const Header: NextPage = () => {
   const router = useRouter();
   const [user] = useAuthState(auth);
 
+  const docRef = doc(db, "users", user?.uid || "null");
+  const [userProfile, loading, error] = useDocumentData(docRef);
   if (user) {
     return (
       <header className={styles.header}>
-        <Link className={styles.link} href="/">
-          Главная
-        </Link>
+        <div>
+          <Link className={styles.link} href="/">
+            Главная
+          </Link>
+          <Link className={styles.link} href="/posts">
+            Посты
+          </Link>
+        </div>
         <div>
           <span className={styles.authorized}>
-            <b>Вы вошли как {user.displayName}</b> ({user.email})
+            <b>Вы вошли как {userProfile?.name}</b> ({user.email})
           </span>
 
           <Button

@@ -102,7 +102,15 @@
   transition: color 0.15s ease, border-color 0.15s ease;
   max-width: 300px;
 }
+.postItem {
+  cursor: pointer;
+  transition: 0.2s;
+  position: relative;
+}
 
+.postItem:hover {
+  border: 1px solid #555;
+}
 .card:hover,
 .card:focus,
 .card:active {
@@ -124,6 +132,11 @@
 .logo {
   height: 1em;
   margin-left: 0.5rem;
+}
+.postCreatedAt {
+  opacity: 0.5;
+  position: absolute;
+  right: 10px;
 }
 
 @media (max-width: 600px) {
