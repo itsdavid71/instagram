@@ -17,6 +17,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../app/firebaseApp";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { signOut } from "firebase/auth";
+import { LinkedCamera } from "@mui/icons-material";
 
 type Setting = {
   key: string;
@@ -65,23 +66,24 @@ const ResponsiveAppBar = () => {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <LocalSeeIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            Nordic
-          </Typography>
+          <Link href="/">
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              Nordic
+            </Typography>
+          </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -188,7 +190,13 @@ const ResponsiveAppBar = () => {
                   key={setting.key}
                   onClick={() => handleCloseUserMenu(setting)}
                 >
-                  <Typography textAlign="center">{setting.text}</Typography>
+                  {setting.href ? (
+                    <Link href={setting.href}>
+                      <Typography textAlign="center">{setting.text}</Typography>
+                    </Link>
+                  ) : (
+                    <Typography textAlign="center">{setting.text}</Typography>
+                  )}
                 </MenuItem>
               ))}
             </Menu>

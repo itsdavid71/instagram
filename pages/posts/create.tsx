@@ -2,7 +2,10 @@ import { ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { TextField, Box, Button, Alert } from "@mui/material";
 import type { NextPage } from "next";
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import {
+  useCollectionData,
+  useDocumentData,
+} from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
 import { useUploadFile } from "react-firebase-hooks/storage";
 import Link from "next/link";
@@ -26,6 +29,8 @@ type FormData = {
 };
 const Create: NextPage = () => {
   const [user] = useAuthState(auth);
+  const docRef = doc(db, "users", String(user?.uid));
+  const [userProfile, loading, error] = useDocumentData(docRef);
   const router = useRouter();
 
   const {
@@ -40,10 +45,13 @@ const Create: NextPage = () => {
   const imageURLValue = watch("imageURL");
   console.log(imageURLValue);
   const onSubmit = handleSubmit(async (data) => {
-    if (user) {
+    if (user && userProfile) {
       const newPost = {
         text: data.text,
         uid: user.uid,
+        user: {
+          name: userProfile.name,
+        },
         createdAt: new Date(),
         imageURL: data.imageURL,
       };
@@ -119,6 +127,7 @@ const Create: NextPage = () => {
         {imageURLValue && (
           <img src={imageURLValue} style={{ width: 200 }} alt="preview" />
         )}
+
         <Button
           type="submit"
           variant="contained"

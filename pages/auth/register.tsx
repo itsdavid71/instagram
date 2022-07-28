@@ -44,12 +44,10 @@ const Register: NextPage = () => {
   useEffect(() => {
     if (newUser) {
       const uid = newUser.user.uid;
-      doc(db, "users", uid),
-        {
-          name: getValues("name"),
-        };
+      setDoc(doc(db, "users", uid), {
+        name: getValues("name"),
+      });
     }
-    console.log(newUser);
   }, [newUser]);
 
   if (user) {

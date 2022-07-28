@@ -17,7 +17,7 @@ type FormData = {
 };
 const Profile: NextPage = () => {
   const [user] = useAuthState(auth);
-  const docRef = doc(db, "users", user?.uid || "null");
+  const docRef = doc(db, "users", String(user?.uid));
   const [userProfile, loading, error] = useDocumentData(docRef);
 
   if (loading) {
@@ -32,7 +32,6 @@ const Profile: NextPage = () => {
       </Grid>
     );
   }
-  console.log(error);
   if (error) {
     return <div>Неполадки с соединением</div>;
   }

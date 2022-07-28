@@ -19,7 +19,7 @@ const Post: FC<PostPropTypes> = ({ post }) => {
   return (
     <Card>
       <CardHeader
-        title={post.uid}
+        title={post.user.name}
         subheader={post.createdAt ? post.createdAt?.toLocaleDateString() : ""}
       />
       <Link href={`/posts/${post.id}`}>
