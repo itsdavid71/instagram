@@ -11,7 +11,7 @@ import {
   useCreateUserWithEmailAndPassword,
 } from "react-firebase-hooks/auth";
 import { signOut, updateProfile } from "firebase/auth";
-import Header from "../../components/header";
+import Header from "../../components/Header";
 import Link from "next/link";
 
 type FormData = {

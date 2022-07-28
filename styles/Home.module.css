@@ -16,6 +16,7 @@
 }
 .postLink {
   display: block;
+  margin: 20px 0 !important;
 }
 .authorized {
   margin: 5px 10px;

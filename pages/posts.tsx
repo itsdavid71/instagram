@@ -12,9 +12,10 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { db } from "../app/firebaseApp";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
-import { Card, Button } from "@mui/material";
+import { Card, Button, Box } from "@mui/material";
 import { style } from "@mui/system";
 import postConverter from "../helpers/postConverter";
+import Post from "../components/Post";
 
 const Posts: NextPage = () => {
   const postsRef = collection(db, "posts").withConverter(postConverter);
@@ -32,24 +33,15 @@ const Posts: NextPage = () => {
       {posts && (
         <div>
           {posts.map((post) => (
-            <Link
-              key={post.id}
-              className={styles.postLink}
-              href={"/posts/" + post.id}
-            >
-              <Card
-                sx={{ mt: 2, p: 2 }}
-                className={styles.postItem}
-                variant="outlined"
-              >
-                {post.createdAt && (
-                  <span className={styles.postCreatedAt}>
-                    {post.createdAt.toLocaleDateString()}
-                  </span>
-                )}
-                {post.text}
-              </Card>
-            </Link>
+            // <Link
+            //   key={post.id}
+            //   className={styles.postLink}
+            //   href={"/posts/" + post.id}
+            // >
+            <Box sx={{ mb: 2 }}>
+              <Post post={post} />
+            </Box>
+            // </Link>
           ))}
         </div>
       )}

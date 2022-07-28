@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import React, { useState } from "react";
 import styles from "../styles/Home.module.css";
-import Header from "../components/header";
+import Header from "../components/Header";
 import { TextField, Box, Button, Alert } from "@mui/material";
 
 import { updateProfile } from "firebase/auth";

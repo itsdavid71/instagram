@@ -28,8 +28,17 @@ const Create: NextPage = () => {
   const [user] = useAuthState(auth);
   const router = useRouter();
 
-  const { register, handleSubmit, setValue } = useForm<FormData>();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    watch,
+  } = useForm<FormData>();
+  console.log(errors);
   const [uploadFile, uploading] = useUploadFile();
+  const imageURLValue = watch("imageURL");
+  console.log(imageURLValue);
   const onSubmit = handleSubmit(async (data) => {
     if (user) {
       const newPost = {
@@ -38,6 +47,7 @@ const Create: NextPage = () => {
         createdAt: new Date(),
         imageURL: data.imageURL,
       };
+
       const docRef = await addDoc(collection(db, "posts"), newPost);
       router.push(`/posts/${docRef.id}`);
     }
@@ -65,6 +75,7 @@ const Create: NextPage = () => {
       const result = await uploadFile(fileRef, event.target.files[0]);
       if (result) {
         const imageURL = await getDownloadURL(result?.ref);
+
         setValue("imageURL", imageURL);
       }
     }
@@ -94,6 +105,20 @@ const Create: NextPage = () => {
             />
           </Button>
         </div>
+        {/* {errors.imageURL && (
+          <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
+            Загрузите изображение
+          </Alert>
+        )} */}
+        {!imageURLValue ||
+          (imageURLValue.length === 0 && (
+            <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
+              Загрузите изображение
+            </Alert>
+          ))}
+        {imageURLValue && (
+          <img src={imageURLValue} style={{ width: 200 }} alt="preview" />
+        )}
         <Button
           type="submit"
           variant="contained"

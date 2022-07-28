@@ -17,7 +17,7 @@ import {
   getAuth,
   updateProfile,
 } from "firebase/auth";
-import Header from "../../components/header";
+import Header from "../../components/Header";
 
 type FormData = {
   name: string;
