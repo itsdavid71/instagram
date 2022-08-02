@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import CommentIcon from "@mui/icons-material/Comment";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import type PostType from "../types/post";
 import { formatDistance } from "date-fns";
@@ -20,7 +21,7 @@ import { auth } from "../app/firebaseApp";
 
 type PostPropTypes = {
   post: PostType;
-  onLikeClick: () => void;
+  onLikeClick?: () => void;
   liked?: boolean;
 };
 const Post: FC<PostPropTypes> = ({ post, onLikeClick, liked }) => {
@@ -59,6 +60,10 @@ const Post: FC<PostPropTypes> = ({ post, onLikeClick, liked }) => {
         <IconButton onClick={onLikeClick}>
           <FavoriteIcon sx={{ color: liked ? "red" : "grey", mr: 1 }} />
           {post.likesCount > 0 ? post.likesCount : ""}
+        </IconButton>
+        <IconButton>
+          <CommentIcon sx={{ mr: 1 }} />
+          {post.commentsCount > 0 ? post.commentsCount : ""}
         </IconButton>
       </CardActionArea>
     </Card>

@@ -5,32 +5,27 @@ import {
   SnapshotOptions,
   WithFieldValue,
 } from "firebase/firestore";
-import type Post from "../types/post";
+import type Comment from "../types/comment";
 
-const postConverter: FirestoreDataConverter<Post> = {
-  toFirestore(post: WithFieldValue<Post>): DocumentData {
-    return { text: post.text };
+const userConverter: FirestoreDataConverter<Comment> = {
+  toFirestore(comment: WithFieldValue<Comment>): DocumentData {
+    return { text: comment.text };
   },
   fromFirestore(
     snapshot: QueryDocumentSnapshot,
     options: SnapshotOptions
-  ): Post {
+  ): Comment {
     const data = snapshot.data(options);
     return {
+      uid: data.uid,
+      user: data.user,
       id: snapshot.id,
       text: data.text,
-      uid: data.uid,
-      user: {
-        name: data.user.name,
-      },
-      imageURL: data.imageURL,
       createdAt: data.createdAt
         ? new Date(data.createdAt?.seconds * 1000)
         : null,
-      likesCount: data.likesCount,
-      commentsCount: data.commentsCount,
     };
   },
 };
 
-export default postConverter;
+export default userConverter;
