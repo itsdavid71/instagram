@@ -17,7 +17,12 @@ const PostPage: NextPage = () => {
     <div>
       <h1>Страница поста {router.query.id}</h1>
       {post && <Post post={post} />}
-      <Button variant="outlined" onClick={() => router.push("/posts")}>
+      <Button
+        variant="contained"
+        fullWidth
+        sx={{ mt: 2, mb: 2, p: 2 }}
+        onClick={() => router.push("/posts")}
+      >
         Список постов
       </Button>
     </div>

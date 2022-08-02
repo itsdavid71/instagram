@@ -27,6 +27,7 @@ const postConverter: FirestoreDataConverter<Post> = {
       createdAt: data.createdAt
         ? new Date(data.createdAt?.seconds * 1000)
         : null,
+      likesCount: data.likesCount,
     };
   },
 };

@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { TextField, Box, Button, Alert } from "@mui/material";
 import type { NextPage } from "next";
@@ -40,12 +40,10 @@ const Create: NextPage = () => {
     formState: { errors },
     watch,
   } = useForm<FormData>();
-  console.log(errors);
   const [uploadFile, uploading] = useUploadFile();
   const imageURLValue = watch("imageURL");
-  console.log(imageURLValue);
   const onSubmit = handleSubmit(async (data) => {
-    if (user && userProfile) {
+    if (user && userProfile && imageURLValue?.length !== 0) {
       const newPost = {
         text: data.text,
         uid: user.uid,
@@ -80,15 +78,15 @@ const Create: NextPage = () => {
         storage,
         `${Date.now()}-${event.target.files[0].name}`
       );
+
       const result = await uploadFile(fileRef, event.target.files[0]);
       if (result) {
         const imageURL = await getDownloadURL(result?.ref);
-
-        setValue("imageURL", imageURL);
+        setValue("imageURL", imageURL, { shouldValidate: true });
       }
     }
   };
-
+  register("imageURL", { required: true });
   return (
     <div>
       <h1>Создать новый пост</h1>
@@ -100,17 +98,11 @@ const Create: NextPage = () => {
           multiline
           rows={4}
           type="text"
-          required
         />
         <div>
           <Button component="label" variant="contained" sx={{ mt: 2 }}>
             Загрузить фото
-            <input
-              type="file"
-              hidden
-              {...register("imageURL")}
-              onChange={handleFileChange}
-            />
+            <input type="file" hidden onChange={handleFileChange} />
           </Button>
         </div>
         {/* {errors.imageURL && (
@@ -124,7 +116,7 @@ const Create: NextPage = () => {
               Загрузите изображение
             </Alert>
           ))}
-        {imageURLValue && (
+        {imageURLValue?.length !== 0 && (
           <img src={imageURLValue} style={{ width: 200 }} alt="preview" />
         )}
 

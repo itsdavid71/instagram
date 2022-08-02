@@ -46,6 +46,7 @@ const Register: NextPage = () => {
       const uid = newUser.user.uid;
       setDoc(doc(db, "users", uid), {
         name: getValues("name"),
+        email: getValues("email"),
       });
     }
   }, [newUser]);

@@ -7,6 +7,7 @@ type Post = {
   };
   imageURL: string;
   createdAt: Date | null;
+  likesCount: number;
 };
 
 export default Post;

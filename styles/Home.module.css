@@ -139,7 +139,20 @@
   position: absolute;
   right: 10px;
 }
+.postActions {
+  padding: 20px;
+  display: flex;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
 
+.mainTitle {
+  text-align: center;
+  font-size: 3rem;
+}
+.postProfilePhoto {
+  width: 50px;
+}
 @media (max-width: 600px) {
   .grid {
     width: 100%;

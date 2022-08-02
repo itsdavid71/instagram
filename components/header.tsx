@@ -26,8 +26,8 @@ type Setting = {
   onClick?: () => void;
 };
 const pages = [
-  { href: "/posts/", text: "Посты" },
-  { href: "/posts/create/", text: "Новый пост" },
+  { href: "/posts/", text: "Лента" },
+  { href: "/posts/create/", text: "Создать публикацию" },
 ];
 const settings = [
   { key: "profile", href: "/auth/profile", text: "Профиль" },
