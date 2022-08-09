@@ -153,6 +153,38 @@
 .postProfilePhoto {
   width: 50px;
 }
+.imageUploadPreview {
+  margin-right: 10px;
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  position: relative;
+  display: inline-block;
+}
+.imageUploadPreview::before {
+  content: "";
+  position: absolute;
+  background: rgb(255, 255, 255);
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  opacity: 0;
+  transition: 0.1s;
+}
+.imageUploadPreview:hover::before {
+  opacity: 0.3;
+}
+.imageUploadPreview:active,
+.imageUploadPreview:focus {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
 @media (max-width: 600px) {
   .grid {
     width: 100%;

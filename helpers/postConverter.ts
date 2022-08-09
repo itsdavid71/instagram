@@ -23,7 +23,7 @@ const postConverter: FirestoreDataConverter<Post> = {
       user: {
         name: data.user.name,
       },
-      imageURL: data.imageURL,
+      images: data.images,
       createdAt: data.createdAt
         ? new Date(data.createdAt?.seconds * 1000)
         : null,

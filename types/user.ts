@@ -1,4 +1,5 @@
 type User = {
+  uid: string;
   name: string;
   likes: string[];
 };

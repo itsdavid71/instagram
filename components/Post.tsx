@@ -18,6 +18,7 @@ import { ru } from "date-fns/locale";
 import styles from "../styles/Home.module.css";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../app/firebaseApp";
+import Images from "./Images";
 
 type PostPropTypes = {
   post: PostType;
@@ -34,7 +35,7 @@ const Post: FC<PostPropTypes> = ({ post, onLikeClick, liked }) => {
       })
     : "";
   return (
-    <Card>
+    <Card sx={{ width: 1 / 2, mx: "auto" }}>
       <Link href={`/user/${user?.uid}`}>
         <CardHeader
           avatar={
@@ -42,7 +43,7 @@ const Post: FC<PostPropTypes> = ({ post, onLikeClick, liked }) => {
               <img
                 className={styles.postProfilePhoto}
                 alt="Photo"
-                src={user?.photoURL}
+                src={String(user?.photoURL)}
               />
             </Avatar>
           }
@@ -50,12 +51,12 @@ const Post: FC<PostPropTypes> = ({ post, onLikeClick, liked }) => {
           subheader={date}
         />
       </Link>
-      <Link href={`/posts/${post.id}`}>
-        <a>
-          <CardMedia component="img" image={post.imageURL} />
-          <CardContent>{post.text}</CardContent>
-        </a>
-      </Link>
+      {post.images && (
+        <Link href={`/posts/${post.id}`}>
+          <a>{post.images && <Images images={post.images} />}</a>
+        </Link>
+      )}
+      <CardContent>{post.text}</CardContent>
       <CardActionArea className={styles.postActions}>
         <IconButton onClick={onLikeClick}>
           <FavoriteIcon sx={{ color: liked ? "red" : "grey", mr: 1 }} />

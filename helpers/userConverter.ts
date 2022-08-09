@@ -1,7 +1,7 @@
 import {
-  QueryDocumentSnapshot,
   DocumentData,
   FirestoreDataConverter,
+  QueryDocumentSnapshot,
   SnapshotOptions,
   WithFieldValue,
 } from "firebase/firestore";
@@ -9,7 +9,7 @@ import type User from "../types/user";
 
 const userConverter: FirestoreDataConverter<User> = {
   toFirestore(user: WithFieldValue<User>): DocumentData {
-    return { user: user.name };
+    return { name: user.name };
   },
   fromFirestore(
     snapshot: QueryDocumentSnapshot,
@@ -17,6 +17,7 @@ const userConverter: FirestoreDataConverter<User> = {
   ): User {
     const data = snapshot.data(options);
     return {
+      uid: snapshot.id,
       name: data.name,
       likes: data.likes,
     };

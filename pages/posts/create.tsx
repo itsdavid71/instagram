@@ -1,30 +1,30 @@
 import { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
-import { TextField, Box, Button, Alert } from "@mui/material";
-import type { NextPage } from "next";
 import {
-  useCollectionData,
-  useDocumentData,
-} from "react-firebase-hooks/firestore";
+  TextField,
+  Box,
+  Button,
+  Alert,
+  Typography,
+  Modal,
+} from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import type { NextPage } from "next";
+import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
+import LinearProgress, {
+  LinearProgressProps,
+} from "@mui/material/LinearProgress";
 import { useUploadFile } from "react-firebase-hooks/storage";
 import Link from "next/link";
-import {
-  doc,
-  setDoc,
-  addDoc,
-  collection,
-  QuerySnapshot,
-} from "firebase/firestore";
+import { doc, addDoc, collection } from "firebase/firestore";
 import { auth, db, storage } from "../../app/firebaseApp";
-import {
-  useAuthState,
-  useCreateUserWithEmailAndPassword,
-} from "react-firebase-hooks/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import ImagesOrder from "../../components/ImagesOrder";
 
 type FormData = {
-  imageURL: string;
+  images: string[];
   text: string;
 };
 const Create: NextPage = () => {
@@ -39,11 +39,37 @@ const Create: NextPage = () => {
     setValue,
     formState: { errors },
     watch,
-  } = useForm<FormData>();
-  const [uploadFile, uploading] = useUploadFile();
-  const imageURLValue = watch("imageURL");
+  } = useForm<FormData>({ mode: "onChange" });
+  const [uploadFile, uploading, snapshot, uploadError] = useUploadFile();
+  const imagesValue = watch("images");
+
+  // const countFiles = [];
+  // if (snapshot) {
+  //   const loadProgressTotal = snapshot.totalBytes;
+  //   const loadProgressTransferred = snapshot.bytesTransferred;
+  //   countFiles.push(snapshot);
+  // }
+  // console.log(countFiles);
+
+  function LinearProgressWithLabel(
+    props: LinearProgressProps & { value: number }
+  ) {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ width: "100%", mr: 1 }}>
+          <LinearProgress variant="determinate" {...props} />
+        </Box>
+        <Box sx={{ minWidth: 35 }}>
+          <Typography variant="body2" color="text.secondary">{`${Math.round(
+            props.value
+          )}%`}</Typography>
+        </Box>
+      </Box>
+    );
+  }
+
   const onSubmit = handleSubmit(async (data) => {
-    if (user && userProfile && imageURLValue?.length !== 0) {
+    if (user && userProfile) {
       const newPost = {
         text: data.text,
         uid: user.uid,
@@ -51,15 +77,13 @@ const Create: NextPage = () => {
           name: userProfile.name,
         },
         createdAt: new Date(),
-        imageURL: data.imageURL,
+        images: data.images,
       };
 
       const docRef = await addDoc(collection(db, "posts"), newPost);
       router.push(`/posts/${docRef.id}`);
     }
   });
-  //   .then(() => {
-  //     router.push(`/posts/${id}`);
 
   if (!user) {
     return (
@@ -74,19 +98,28 @@ const Create: NextPage = () => {
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const fileRef = ref(
-        storage,
-        `${Date.now()}-${event.target.files[0].name}`
-      );
+      const fileUploads = Array.from(event.target.files).map(async (file) => {
+        const fileRef = ref(storage, `${Date.now()}-${file.name}`);
+        const result = await uploadFile(fileRef, file);
+        console.log(result);
+        if (result) {
+          return await getDownloadURL(result?.ref);
+        }
+        return "";
+      });
 
-      const result = await uploadFile(fileRef, event.target.files[0]);
-      if (result) {
-        const imageURL = await getDownloadURL(result?.ref);
-        setValue("imageURL", imageURL, { shouldValidate: true });
+      const results = await Promise.all(fileUploads);
+
+      if (results) {
+        setValue("images", results, { shouldValidate: true });
       }
     }
   };
-  register("imageURL", { required: true });
+  const handleImagesSort = (newImages: string[]) => {
+    setValue("images", newImages);
+  };
+
+  register("images", { required: true });
   return (
     <div>
       <h1>Создать новый пост</h1>
@@ -100,24 +133,46 @@ const Create: NextPage = () => {
           type="text"
         />
         <div>
-          <Button component="label" variant="contained" sx={{ mt: 2 }}>
-            Загрузить фото
-            <input type="file" hidden onChange={handleFileChange} />
-          </Button>
+          {!uploading && (
+            <LoadingButton
+              disabled={uploading}
+              loading={uploading}
+              component="label"
+              variant="contained"
+              sx={{ mb: 2, mt: 2 }}
+            >
+              {uploading && <span>Загрузка...</span>}
+              {!uploading && (
+                <div>
+                  <span>Загрузить фото</span>
+                  <input
+                    multiple
+                    type="file"
+                    hidden
+                    onChange={handleFileChange}
+                  />
+                </div>
+              )}
+            </LoadingButton>
+          )}
+          {snapshot && (
+            // <LinearProgressWithLabel
+            //   value={Math.ceil(
+            //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            //   )}
+            // />
+            <LinearProgress sx={{ mt: 2, mb: 2 }} />
+          )}
         </div>
-        {/* {errors.imageURL && (
-          <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
-            Загрузите изображение
+
+        {errors.images && (
+          <Alert severity="error">
+            Пожалуйста, загрузите хотя бы одно фото
           </Alert>
-        )} */}
-        {!imageURLValue ||
-          (imageURLValue.length === 0 && (
-            <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
-              Загрузите изображение
-            </Alert>
-          ))}
-        {imageURLValue?.length !== 0 && (
-          <img src={imageURLValue} style={{ width: 200 }} alt="preview" />
+        )}
+
+        {imagesValue && !uploading && (
+          <ImagesOrder images={imagesValue} onSort={handleImagesSort} />
         )}
 
         <Button
