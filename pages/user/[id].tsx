@@ -1,18 +1,8 @@
 import { Grid, ImageList, ImageListItem } from "@mui/material";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import {
-  useCollectionData,
-  useCollectionOnce,
-} from "react-firebase-hooks/firestore";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  limit,
-} from "firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { collection, query, where } from "firebase/firestore";
 import postConverter from "../../helpers/postConverter";
 import { db } from "../../app/firebaseApp";
 import Link from "next/link";
@@ -26,9 +16,6 @@ const userPage: NextPage = () => {
   if (uid) {
     const stateQuery = query(postsRef, where("uid", "==", uid));
     const [posts] = useCollectionData(stateQuery);
-
-    const userQuery = query(userRef, where("uid", "==", uid));
-    const [user] = useCollectionData(stateQuery);
 
     return (
       <div>
@@ -65,7 +52,6 @@ const userPage: NextPage = () => {
   } else {
     return <div>Error</div>;
   }
-  //   console.log(posts);
 };
 
 export default userPage;
